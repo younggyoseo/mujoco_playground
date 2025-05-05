@@ -170,6 +170,16 @@ class RSLRLBraxWrapper(VecEnv):
         "observations": {"critic": critic_obs},
         "log": {},
     }
+    if type(info["raw_obs"]) == dict:
+      info_ret["observations"]["raw"] = {
+        "obs": _jax_to_torch(info["raw_obs"]["state"]),
+        "critic_obs": _jax_to_torch(info["raw_obs"]["privileged_state"]) if self.asymmetric_obs else None
+      }
+    else:
+      info_ret["observations"]["raw"] = {
+        "obs": _jax_to_torch(info["raw_obs"]),
+        "critic_obs": None,
+      }
 
     if "last_episode_success_count" in info:
       last_episode_success_count = (
@@ -187,7 +197,7 @@ class RSLRLBraxWrapper(VecEnv):
       if k not in info_ret["log"]:
         info_ret["log"][k] = _jax_to_torch(v).float().mean().item()
 
-    return obs, reward, done, info_ret
+    return obs, reward, truncation, done, info_ret
 
   def reset(self):
     # todo add random init like in collab examples?
