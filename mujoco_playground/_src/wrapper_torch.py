@@ -197,7 +197,7 @@ class RSLRLBraxWrapper(VecEnv):
       if k not in info_ret["log"]:
         info_ret["log"][k] = _jax_to_torch(v).float().mean().item()
 
-    return obs, reward, truncation, done, info_ret
+    return obs, reward, done, info_ret
 
   def reset(self):
     # todo add random init like in collab examples?
